@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:id="@+id/rlRoot"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:inputType="number"
+        android:textSize="24sp" />
+
+    <cn.wgc.custom.keyboard.view.KeyboardEditText
+        android:id="@+id/etLetter"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp" />
+
+    <cn.wgc.custom.keyboard.view.KeyboardEditText
+        android:id="@+id/etNumber"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        app:keyboardType="number"
+        app:pointInputEnable="false" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="30dp"
+        android:inputType="text"
+        android:textSize="24sp" />
+
+        <cn.wgc.custom.keyboard.view.KeyboardEditText
+            android:id="@+id/etIdNumber"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            app:keyboardType="idNumber"
+            app:pointInputEnable="false" />
+    </LinearLayout>
+</RelativeLayout>
