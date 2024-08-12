@@ -183,7 +183,7 @@ class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
                 val location = IntArray(2)
                 keyboardView.getLocationOnScreen(location)
                 start = location[1]
-                if (start in 1..<screenHeight) {
+                if (start in 1 until screenHeight) {
                     keyboardView.viewTreeObserver?.removeOnGlobalLayoutListener(this)
                     scrollView()
                 }
