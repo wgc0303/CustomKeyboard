@@ -84,9 +84,10 @@ object KeyboardUtil {
         if (token != null) {
             val manager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            manager.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS)
+            manager.hideSoftInputFromWindow(token, 0)
         }
     }
+
 
     /**
      *解决ScrollView中自动获取焦点，弹出键盘的问题
@@ -96,10 +97,6 @@ object KeyboardUtil {
         scrollView.descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
         scrollView.isFocusable = true
         scrollView.isFocusableInTouchMode = true
-        scrollView.setOnTouchListener { v, _ ->
-            v.requestFocusFromTouch()
-            false
-        }
     }
 
     fun handDialogKeyboardStatus(dialog: Dialog, contentView: View, hasListener: Boolean,

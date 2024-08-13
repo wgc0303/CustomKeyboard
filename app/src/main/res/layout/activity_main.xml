@@ -17,13 +17,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="dialog 中使用" />
+            android:text="dialog中使用" />
 
         <cn.wgc.custom.keyboard.view.KeyboardEditText
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
-            android:hint="1" />
+            android:hint="字母转数字键盘"
+            app:keyboardType="letter2number"
+            app:pointInputEnable="true" />
 
         <EditText
             android:id="@+id/tvContent"
@@ -31,7 +33,6 @@
             android:layout_height="60dp"
             android:layout_marginTop="60dp"
             android:textSize="24sp" />
-
 
         <EditText
             android:id="@+id/tvf"
@@ -45,43 +46,46 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
-            android:hint="2"
+            android:hint="数字密码键盘"
             app:keyboardType="numPwd" />
 
         <cn.wgc.custom.keyboard.view.KeyboardEditText
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
-            android:hint="3"
+            android:hint="数字键盘"
             app:keyboardType="number"
             app:pointInputEnable="false" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="60dp"
+            android:textSize="24sp" />
 
         <cn.wgc.custom.keyboard.view.KeyboardEditText
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
-            android:hint="4"
-            app:keyboardType="idNumber"
+            android:hint="身份证键盘"
+            app:keyboardType="idNumber"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="60dp"
+            android:textSize="24sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="800dp" />
+
+        <cn.wgc.custom.keyboard.view.KeyboardEditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="30dp"
+            android:hint="数字转字母键盘"
+            app:keyboardType="number2letter"
             app:pointInputEnable="false" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="60dp"
-            android:textSize="24sp" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="60dp"
-            android:textSize="24sp" />
-
-
-        <!--    <cn.wgc.custom.keyboard.view.CustomKeyboard-->
-        <!--        android:id="@+id/view_keyboard"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="254dp"-->
-        <!--        android:layout_alignParentBottom="true"-->
-        <!--        android:background="@color/gray" />-->
     </LinearLayout>
 </ScrollView>

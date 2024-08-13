@@ -2,7 +2,6 @@ package cn.wgc.custom.keyboard.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -11,14 +10,11 @@ import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import cn.wgc.custom.keyboard.R
 import cn.wgc.custom.keyboard.entity.KeyEntity
 import cn.wgc.custom.keyboard.util.KeyUtil
-import cn.wgc.custom.keyboard.util.KeyUtil.dp2px
-import cn.wgc.custom.keyboard.util.KeyUtil.sp2px
 
 /**
  * <pre>
@@ -44,12 +40,12 @@ class CustomKeyboard : View {
     }
 
 
-    private var numKeys = KeyUtil.generateNumKeyEntities()
-    private var idNumKeys = KeyUtil.generateIdNumKeyEntities()
-    private var num2LetterKeys = KeyUtil.generateNum2LetterKeyEntities()
-    private var letter2NumKeys = KeyUtil.generateLetter2NumKeyEntities()
-    private var numPwdKeys = KeyUtil.generatePwdKeyEntities()
-    private var keys = letter2NumKeys
+    private val numKeys by lazy { KeyUtil.generateNumKeyEntities() }
+    private val idNumKeys by lazy { KeyUtil.generateIdNumKeyEntities() }
+    private val num2LetterKeys by lazy { KeyUtil.generateNum2LetterKeyEntities() }
+    private val letter2NumKeys by lazy { KeyUtil.generateLetter2NumKeyEntities() }
+    private val numPwdKeys by lazy { KeyUtil.generatePwdKeyEntities() }
+    private var keys: ArrayList<KeyEntity> = arrayListOf()
 
 
     private var numberKeyRect = arrayListOf<RectF>()
@@ -79,7 +75,7 @@ class CustomKeyboard : View {
     private var capitalEnable = true
     private var totalKeyChange = false
     private var capitalKeyChange = false
-    private var pointInputEnable = true
+    private var pointInputEnable = false
     private var pwdHide = true
 
     private var currentKeyValue = 0
@@ -90,9 +86,9 @@ class CustomKeyboard : View {
         init(context, attrs)
     }
 
-    constructor(
-        context: Context, attrs: AttributeSet, defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context,
+                                                                                  attrs,
+                                                                                  defStyleAttr) {
         init(context, attrs)
     }
 
@@ -127,6 +123,17 @@ class CustomKeyboard : View {
     }
 
     fun setPointInputEnable(enable: Boolean) {
+        if (enable) {
+            val keyEntity = keys.find { it.keyValue == -50 }
+            if (keyEntity == null) return
+            keyEntity.keyValue = 46
+            keyEntity.keyName = "."
+        } else {
+            val keyEntity = keys.find { it.keyValue == 46 }
+            if (keyEntity == null) return
+            keyEntity.keyValue = -50
+            keyEntity.keyName = "hide"
+        }
         pointInputEnable = enable
     }
 
@@ -350,12 +357,10 @@ class CustomKeyboard : View {
 
                 -50 -> {
                     //隐藏图标宽高比4:3
-                    val rectF = RectF(
-                        cx - keyDrawableSize / 3 * 4 / 2,
-                        cy - keyDrawableSize / 2,
-                        cx + keyDrawableSize / 3 * 4 / 2,
-                        cy + keyDrawableSize / 2
-                    )
+                    val rectF = RectF(cx - keyDrawableSize / 3 * 4 / 2,
+                                      cy - keyDrawableSize / 2,
+                                      cx + keyDrawableSize / 3 * 4 / 2,
+                                      cy + keyDrawableSize / 2)
                     textPaint.style = Paint.Style.STROKE
                     textPaint.strokeWidth = dp2px(2f).toFloat()
                     canvas.drawRoundRect(rectF, keyDrawableSize / 5, keyDrawableSize / 5, textPaint)
