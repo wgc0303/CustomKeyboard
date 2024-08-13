@@ -27,7 +27,7 @@ implementation 'io.github.wgc0303:CustomKeyboard:1.0.2'
 
 因在dialog的window中显示键盘布局会随着布局参数的变化会有些异常，需要特殊处理，可分为以下两种情况：
 
-1、不监听dialog的show事件。可直接在setContentView做如下处理
+1、不监听dialog的show事件。可直接在setContentView后做如下处理
 
 ```kotlin
 KeyboardUtil.handDialogKeyboardStatus(this, contentView, false, etLetter, etIdNumber, etNumber)
