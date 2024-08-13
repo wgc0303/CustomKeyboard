@@ -68,17 +68,17 @@ override fun setOnShowListener(listener: DialogInterface.OnShowListener?) {
 
 | 字段              | 说明     |
 |:---------------:|:------:|
-| keyPadding      | 键之间的间距 |
-| keyTopPadding   | 键盘顶部间距 |
+| keyPadding      | 按键之间的间距 |
+| keyTopPadding   | 按键顶部间距 |
 | keyTextSize     | 字体大小   |
 | keyTextColor    | 字体颜色   |
-| keyNormalColor  | 键正常艳娥  |
-| keyDrawableSize | 键中图片大小 |
-| keyPressColor   | 键按下颜色  |
+| keyNormalColor  | 按键正常颜色  |
+| keyDrawableSize | 按键中图片大小 |
+| keyPressColor   | 按键按下颜色  |
 
 # 其他的特殊处理
 
-1、在Actvity或dialog中点击非EditText隐藏键盘（含系统键盘），重新dispatchTouchEvent，并做以下处理
+1、在Actvity或dialog中点击非EditText隐藏键盘（含系统键盘），重写dispatchTouchEvent，并做以下处理
 
 ```kotlin
 KeyboardUtil.dispatchTouchEvent(ev, this)
