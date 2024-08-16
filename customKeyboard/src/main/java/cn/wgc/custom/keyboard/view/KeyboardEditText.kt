@@ -194,6 +194,9 @@ class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
         viewTreeObserver.addOnGlobalLayoutListener(object :
                                                        ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
+                //处理键盘自动弹出的问题
+                contentParent.requestFocus()
+                contentParent.requestFocusFromTouch()
                 val location = IntArray(2)
                 getLocationInWindow(location)
                 locationStartY = location[1]
