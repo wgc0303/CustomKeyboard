@@ -3,7 +3,7 @@
 在module 的 build.gradle 添加依赖
 
 ```groovy
-implementation 'io.github.wgc0303:CustomKeyboard:1.0.2'
+implementation 'io.github.wgc0303:CustomKeyboard:1.0.3'
 ```
 
 在你的xml布局是添加控件
