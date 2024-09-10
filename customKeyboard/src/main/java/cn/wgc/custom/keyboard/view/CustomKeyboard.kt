@@ -78,7 +78,8 @@ class CustomKeyboard : View {
     private var pointInputEnable = false
     private var pwdHide = true
 
-    private var currentKeyValue = 0
+    private lateinit var currentKeyEntity: KeyEntity
+    private var currentKeyDownPosition = -1
 
     constructor(context: Context) : super(context)
 
@@ -291,7 +292,8 @@ class CustomKeyboard : View {
             val contains = KeyUtil.rectContainsPoint(downPoint, rectF)
             val keyEntity = keys[i]
             if (contains) {
-                currentKeyValue = keyEntity.keyValue
+                currentKeyEntity = keyEntity
+                currentKeyDownPosition = i
             }
             rectPaint.color = if (contains) keyPressColor else keyNormalColor
             canvas.drawRect(rectF.left, rectF.top, rectF.right, rectF.bottom, rectPaint)
@@ -437,17 +439,43 @@ class CustomKeyboard : View {
     }
 
 
+    private var lastTime = 0L
+    private var downTime = 0L
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                downTime = event.downTime
+                lastTime = 0L
                 downPoint = PointF(event.x, event.y)
                 invalidate()
             }
 
+            MotionEvent.ACTION_MOVE -> {
+                if (currentKeyDownPosition != -1) {
+                    val downTime = event.downTime
+                    val eventTime = event.eventTime
+                    if (lastTime == 0L) lastTime = eventTime
+                    val x = event.x
+                    val y = event.y
+                    val downRect = numberKeyRect[currentKeyDownPosition]
+                    val contains = KeyUtil.rectContainsPoint(PointF(x, y), downRect)
+                    if (contains && eventTime - lastTime > 100L) {
+                        lastTime = eventTime
+                        if (lastTime - downTime >= 800L) keyCallback(currentKeyEntity.keyValue)
+
+                    }
+                }
+
+            }
+
             MotionEvent.ACTION_UP -> {
                 downPoint = null
-                keyCallback(currentKeyValue)
+                currentKeyDownPosition = -1
+                keyCallback(currentKeyEntity.keyValue)
                 if (totalKeyChange) {
                     totalKeyChange = false
                     refreshKeyboard()
