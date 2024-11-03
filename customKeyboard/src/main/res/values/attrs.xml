@@ -20,4 +20,17 @@
             <enum name="numPwd" value="4" />
         </attr>
     </declare-styleable>
+
+
+    <declare-styleable name="CheckKeyboardEditText">
+        <attr name="checkMode" format="enum">
+            <enum name="idNumber" value="0" />
+            <enum name="name" value="1" />
+            <enum name="phone" value="2" />
+            <enum name="phoneCode" value="3" />
+        </attr>
+        <attr name="checkPassColor" format="color" />
+        <attr name="checkErrorColor" format="color" />
+        <attr name="drawableEnable" format="boolean" />
+    </declare-styleable>
 </resources>

@@ -43,7 +43,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
-    coordinates("io.github.wgc0303", "CustomKeyboard", "1.0.4")
+    coordinates("io.github.wgc0303", "CustomKeyboard", "1.0.5")
     pom {
         name.set("custom-keyboard")
         description.set("Simple number keyboard, ID card keyboard, letter keyboard")

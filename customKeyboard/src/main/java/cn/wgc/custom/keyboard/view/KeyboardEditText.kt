@@ -37,7 +37,7 @@ import cn.wgc.custom.keyboard.view.CustomKeyboard.Companion.LETTER_TO_NUMBER_TYP
  * </pre>
  */
 @Suppress("DEPRECATION")
-class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
+open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
 
     private lateinit var contentParent: FrameLayout
     private lateinit var keyboardView: CustomKeyboard

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/view_keyboard"
     android:layout_width="match_parent"
-    android:layout_height="284dp"
+    android:layout_height="244dp"
     android:background="@color/gray"
     app:keyDrawableSize="18dp"
     app:keyNormalColor="@color/white"

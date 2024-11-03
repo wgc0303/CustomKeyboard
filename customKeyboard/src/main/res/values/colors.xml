@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="gray">#E1DBDB</color>
+    <color name="kb_gray">#E1DBDB</color>
+    <color name="kb_text_default_dark">#343434</color>
+    <color name="kb_text_error_color">#fd6d60</color>
 </resources>
