@@ -22,6 +22,8 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import cn.wgc.custom.keyboard.R
 import cn.wgc.custom.keyboard.view.CustomKeyboard.Companion.LETTER_TO_NUMBER_TYPE
 

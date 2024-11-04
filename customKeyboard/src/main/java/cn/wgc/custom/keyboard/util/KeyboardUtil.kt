@@ -135,9 +135,9 @@ object KeyboardUtil {
                 contentView.getLocationOnScreen(location)
                 val start = location[1]
                 val navBarVisible = if (dialog.ownerActivity != null) {
-                    isNavBarVisible(dialog.ownerActivity!!.window, context)
+                    hasNavigationBar(dialog.ownerActivity!!.window, context)
                 } else {
-                    isNavBarVisible(((context as ContextWrapper).baseContext as Activity).window, context)
+                    hasNavigationBar(((context as ContextWrapper).baseContext as Activity).window, context)
                 }
                 val navigationBarHeight = if (navBarVisible) getNavigationBarHeight(context) else 0
                 val attributes = dialog.window?.attributes
@@ -198,44 +198,16 @@ object KeyboardUtil {
     /**
      * 判断底部状态栏是否显示
      */
-    fun isNavBarVisible(activity: Activity): Boolean {
-        return isNavBarVisible(activity.window, activity)
-    }
-
-    /**
-     * 判断底部状态栏是否显示
-     */
-    fun isNavBarVisible(window: Window, context: Context): Boolean {
-        var isVisible = false
-        val decorView = window.decorView as ViewGroup
-        var i = 0
-        val count = decorView.childCount
-        while (i < count) {
-            val child = decorView.getChildAt(i)
-            val id = child.id
-            if (id != View.NO_ID) {
-                val resourceEntryName = getResNameById(id, context)
-                if ("navigationBarBackground" == resourceEntryName && child.visibility == View.VISIBLE) {
-                    isVisible = true
-                    break
-                }
-            }
-            i++
+    fun hasNavigationBar(window: Window,context: Context): Boolean {
+        val displayMetrics = context.resources.displayMetrics
+        val usableHeight = displayMetrics.heightPixels
+        val realHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.windowManager.currentWindowMetrics.bounds.height()
+        } else {
+            val metrics = DisplayMetrics()
+            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(metrics)
+            metrics.heightPixels
         }
-        if (isVisible) {
-            val visibility = decorView.systemUiVisibility
-            isVisible = visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION == 0
-        }
-        return isVisible
+        return realHeight > usableHeight
     }
-
-    private fun getResNameById(id: Int, context: Context): String {
-        return try {
-            context.resources.getResourceEntryName(id)
-        } catch (ignore: Exception) {
-            ""
-        }
-    }
-
-
 }
