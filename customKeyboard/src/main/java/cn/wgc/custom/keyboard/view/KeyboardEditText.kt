@@ -9,6 +9,7 @@ import android.os.Build
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -22,9 +23,9 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import cn.wgc.custom.keyboard.R
+import cn.wgc.custom.keyboard.util.KeyboardUtil
+import cn.wgc.custom.keyboard.util.KeyboardUtil.hasNavigationBar
 import cn.wgc.custom.keyboard.view.CustomKeyboard.Companion.LETTER_TO_NUMBER_TYPE
 
 
@@ -51,6 +52,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
     private var popupLocationOffsetY = 0
     private var selfLocationOffsetY = 0
     private var useDialogWindow = false
+    private var currentWindow: Window? = null
 
     //获取屏幕的高度
     private val screenHeight: Int
@@ -71,8 +73,9 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet,
-                defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context,
+                                                                                  attrs,
+                                                                                  defStyleAttr) {
         init(context, attrs)
     }
 
@@ -99,7 +102,16 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
                 keyboardView.changeKeyboardType(keyboardType)
                 notSystemSoftInput()
                 hideInput(context, this)
-                popupWindow.showAtLocation(contentParent, Gravity.BOTTOM, 0, popupLocationOffsetY)
+                //判断是否使用了沉浸式状态栏
+                val isImmersive =
+                    (currentWindow!!.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0
+                val navigationBarHeight = if (isImmersive && hasNavigationBar(currentWindow!!,
+                                                                              context)
+                ) KeyboardUtil.getNavigationBarHeight(currentWindow!!, context) else 0
+                popupWindow.showAtLocation(contentParent,
+                                           Gravity.BOTTOM,
+                                           0,
+                                           popupLocationOffsetY + navigationBarHeight)
                 if (start > 0) {
                     scrollView()
                 }
@@ -128,19 +140,22 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
     fun setPopupLocationOffsetYOnDialog(offsetY: Int) {
         popupLocationOffsetY = offsetY
     }
+
     fun setSelfLocationOffsetYOnDialog(selfLocationOffsetY: Int) {
-        this.selfLocationOffsetY=selfLocationOffsetY
+        this.selfLocationOffsetY = selfLocationOffsetY
     }
 
     private fun initKeyboard(window: Window) {
+        currentWindow = window
         val decorView = window.decorView
         contentParent = decorView.findViewById(android.R.id.content)
         val popView = LayoutInflater.from(context).inflate(R.layout.pop_keyboard, null)
         keyboardView = popView.findViewById(R.id.view_keyboard)
         //监听键盘和自己布局事件，用于点击键盘外部隐藏键盘
         addKeyLayoutListener()
-        popupWindow =
-            PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        popupWindow = PopupWindow(popView,
+                                  ViewGroup.LayoutParams.MATCH_PARENT,
+                                  ViewGroup.LayoutParams.WRAP_CONTENT)
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.GRAY))
         popupWindow.animationStyle = R.style.CustomKeyboardAnim
         popupWindow.isOutsideTouchable = false
@@ -166,7 +181,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
             }
 
             override fun onPwdStatusChange(pwdHide: Boolean) {
-                val start=selectionStart
+                val start = selectionStart
                 inputType = if (pwdHide) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 else InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
                 setSelection(start)
@@ -243,7 +258,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
     private fun scrollView() {
         val location = IntArray(2)
         getLocationInWindow(location)
-        locationStartY = location[1]+selfLocationOffsetY
+        locationStartY = location[1] + selfLocationOffsetY
         if (locationStartY > start - height) {
             val height = locationStartY - start + height
             contentParent.scrollTo(0, height)

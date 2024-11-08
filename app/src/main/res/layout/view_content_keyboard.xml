@@ -12,4 +12,4 @@
     app:keyPressColor="@color/gray"
     app:keyTextColor="@color/black"
     app:keyTextSize="24sp"
-    app:keyTopPadding="0.5dp" />
+    app:keyTopAndBottomPadding="1.5dp" />

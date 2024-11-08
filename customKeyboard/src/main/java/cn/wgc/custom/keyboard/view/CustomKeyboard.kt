@@ -56,7 +56,7 @@ class CustomKeyboard : View {
     private var keyTextSize = 0f
     private var keyPadding = 0f
     private var keyDrawableSize = 0f
-    private var keyTopPadding = 0f
+    private var keyTopAndBottomPadding = 0f
     private var keyboardType = LETTER_TO_NUMBER_TYPE
 
 
@@ -78,7 +78,7 @@ class CustomKeyboard : View {
     private var pointInputEnable = false
     private var pwdHide = true
 
-    private lateinit var currentKeyEntity: KeyEntity
+    private var currentKeyEntity: KeyEntity? = null
     private var currentKeyDownPosition = -1
 
     constructor(context: Context) : super(context)
@@ -103,8 +103,8 @@ class CustomKeyboard : View {
         keyPadding = ty.getDimension(R.styleable.CustomKeyboard_keyPadding, dp2px(1.5F).toFloat())
         keyDrawableSize =
             ty.getDimension(R.styleable.CustomKeyboard_keyDrawableSize, dp2px(18F).toFloat())
-        keyTopPadding =
-            ty.getDimension(R.styleable.CustomKeyboard_keyTopPadding, dp2px(1F).toFloat())
+        keyTopAndBottomPadding = ty.getDimension(R.styleable.CustomKeyboard_keyTopAndBottomPadding,
+                                                 dp2px(1.5F).toFloat())
         ty.recycle()
         rectPaint.color = Color.WHITE
         textPaint.textSize = keyTextSize
@@ -155,7 +155,8 @@ class CustomKeyboard : View {
         super.onLayout(changed, left, top, right, bottom)
         val h = bottom - top
         val w = right - left
-        keyHeight = (h - keyPadding * (KEYBOARD_LINE - 1) - keyTopPadding) / KEYBOARD_LINE
+        keyHeight =
+            (h - keyPadding * (KEYBOARD_LINE - 1) - keyTopAndBottomPadding * 2) / KEYBOARD_LINE
 
         when (keyboardType) {
             //数字键盘,身份证键盘3列,数字密码键盘
@@ -179,8 +180,9 @@ class CustomKeyboard : View {
             val yPosition = i / 3
             val left = (keyWidth + keyPadding) * xPosition
             val right = keyWidth * (xPosition + 1) + xPosition * keyPadding
-            val top = keyTopPadding + yPosition * keyPadding + yPosition * keyHeight
-            val bottom = keyTopPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
+            val top = keyTopAndBottomPadding + yPosition * keyPadding + yPosition * keyHeight
+            val bottom =
+                keyTopAndBottomPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
             numberKeyRect.add(RectF(left, top, right, bottom))
         }
     }
@@ -195,9 +197,10 @@ class CustomKeyboard : View {
                     val yPosition = 0
                     val left = (keyWidth + keyPadding) * xPosition
                     val right = keyWidth * (xPosition + 1) + xPosition * keyPadding
-                    val top = keyTopPadding + yPosition * keyPadding + yPosition * keyHeight
+                    val top =
+                        keyTopAndBottomPadding + yPosition * keyPadding + yPosition * keyHeight
                     val bottom =
-                        keyTopPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
+                        keyTopAndBottomPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
 
@@ -206,9 +209,10 @@ class CustomKeyboard : View {
                     val yPosition = 1
                     val left = keyWidth / 2 + (keyWidth + keyPadding) * xPosition
                     val right = keyWidth / 2 + keyWidth * (xPosition + 1) + xPosition * keyPadding
-                    val top = keyTopPadding + yPosition * keyPadding + yPosition * keyHeight
+                    val top =
+                        keyTopAndBottomPadding + yPosition * keyPadding + yPosition * keyHeight
                     val bottom =
-                        keyTopPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
+                        keyTopAndBottomPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
 
@@ -230,9 +234,10 @@ class CustomKeyboard : View {
                         }
                     }
 
-                    val top = keyTopPadding + yPosition * keyPadding + yPosition * keyHeight
+                    val top =
+                        keyTopAndBottomPadding + yPosition * keyPadding + yPosition * keyHeight
                     val bottom =
-                        keyTopPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
+                        keyTopAndBottomPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
 
@@ -240,24 +245,24 @@ class CustomKeyboard : View {
                 i == 28 -> {
                     val left = 0f
                     val right = keyWidth / 2 + keyWidth * 2 + keyPadding
-                    val top = keyTopPadding + 3 * keyPadding + 3 * keyHeight
-                    val bottom = keyTopPadding + 3 * keyPadding + 4 * keyHeight
+                    val top = keyTopAndBottomPadding + 3 * keyPadding + 3 * keyHeight
+                    val bottom = keyTopAndBottomPadding + 3 * keyPadding + 4 * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
                 //空格键
                 i == 29 -> {
                     val left = keyWidth / 2 + keyWidth * 2 + 2 * keyPadding
                     val right = keyWidth / 2 + keyWidth * 7 + 6 * keyPadding
-                    val top = keyTopPadding + 3 * keyPadding + 3 * keyHeight
-                    val bottom = keyTopPadding + 3 * keyPadding + 4 * keyHeight
+                    val top = keyTopAndBottomPadding + 3 * keyPadding + 3 * keyHeight
+                    val bottom = keyTopAndBottomPadding + 3 * keyPadding + 4 * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
                 //删除键
                 i == 30 -> {
                     val left = keyWidth / 2 + keyWidth * (7) + 7 * keyPadding
                     val right = width.toFloat()
-                    val top = keyTopPadding + 3 * keyPadding + 3 * keyHeight
-                    val bottom = keyTopPadding + 3 * keyPadding + 4 * keyHeight
+                    val top = keyTopAndBottomPadding + 3 * keyPadding + 3 * keyHeight
+                    val bottom = keyTopAndBottomPadding + 3 * keyPadding + 4 * keyHeight
                     numberKeyRect.add(RectF(left, top, right, bottom))
                 }
             }
@@ -465,7 +470,10 @@ class CustomKeyboard : View {
                     val contains = KeyUtil.rectContainsPoint(PointF(x, y), downRect)
                     if (contains && eventTime - lastTime > 100L) {
                         lastTime = eventTime
-                        if (lastTime - downTime >= 800L) keyCallback(currentKeyEntity.keyValue)
+                        if (lastTime - downTime >= 800L) {
+                            currentKeyEntity?.let { keyCallback(it.keyValue) }
+
+                        }
 
                     }
                 }
@@ -475,7 +483,7 @@ class CustomKeyboard : View {
             MotionEvent.ACTION_UP -> {
                 downPoint = null
                 currentKeyDownPosition = -1
-                keyCallback(currentKeyEntity.keyValue)
+                currentKeyEntity?.let { keyCallback(it.keyValue) }
                 if (totalKeyChange) {
                     totalKeyChange = false
                     refreshKeyboard()

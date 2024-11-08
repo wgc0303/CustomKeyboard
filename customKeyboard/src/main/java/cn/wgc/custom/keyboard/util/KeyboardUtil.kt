@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat
 import cn.wgc.custom.keyboard.view.KeyboardEditText
 
 /**
@@ -99,7 +100,9 @@ object KeyboardUtil {
         scrollView.isFocusableInTouchMode = true
     }
 
-    fun handDialogKeyboardStatus(dialog: Dialog, contentView: View, hasListener: Boolean,
+    fun handDialogKeyboardStatus(dialog: Dialog,
+                                 contentView: View,
+                                 hasListener: Boolean,
                                  vararg keyboardEditTexts: KeyboardEditText) {
         val dialogWindow = dialog.window!!
 
@@ -107,14 +110,19 @@ object KeyboardUtil {
             it.addDialogWindow(dialogWindow)
         }
         if (!hasListener) {
-            dialog.setOnShowListener { handKeyboardLocation(dialog, contentView, keyboardEditTexts) }
+            dialog.setOnShowListener {
+                handKeyboardLocation(dialog,
+                                     contentView,
+                                     keyboardEditTexts)
+            }
         } else {
             handKeyboardLocation(dialog, contentView, keyboardEditTexts)
         }
 
     }
 
-    private fun handKeyboardLocation(dialog: Dialog, contentView: View,
+    private fun handKeyboardLocation(dialog: Dialog,
+                                     contentView: View,
                                      keyboardEditTexts: Array<out KeyboardEditText>) {
         contentView.viewTreeObserver?.addOnGlobalLayoutListener(object :
                                                                     ViewTreeObserver.OnGlobalLayoutListener {
@@ -137,7 +145,8 @@ object KeyboardUtil {
                 val navBarVisible = if (dialog.ownerActivity != null) {
                     hasNavigationBar(dialog.ownerActivity!!.window, context)
                 } else {
-                    hasNavigationBar(((context as ContextWrapper).baseContext as Activity).window, context)
+                    hasNavigationBar(((context as ContextWrapper).baseContext as Activity).window,
+                                     context)
                 }
                 val navigationBarHeight = if (navBarVisible) getNavigationBarHeight(context) else 0
                 val attributes = dialog.window?.attributes
@@ -181,6 +190,18 @@ object KeyboardUtil {
     }
 
     @SuppressLint("InternalInsetResource")
+    fun getNavigationBarHeight(window: Window, context: Context): Int {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val systemBars =
+                window.decorView.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            return systemBars.bottom
+        }
+        val resources = context.resources
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
+    }
+
+    @SuppressLint("InternalInsetResource")
     fun getStatusBarHeight(context: Context): Int {
         val resources = context.resources
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
@@ -198,16 +219,19 @@ object KeyboardUtil {
     /**
      * 判断底部状态栏是否显示
      */
-    fun hasNavigationBar(window: Window,context: Context): Boolean {
+    fun hasNavigationBar(window: Window, context: Context): Boolean {
         val displayMetrics = context.resources.displayMetrics
         val usableHeight = displayMetrics.heightPixels
         val realHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.windowManager.currentWindowMetrics.bounds.height()
         } else {
             val metrics = DisplayMetrics()
-            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(metrics)
+            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(
+                metrics)
             metrics.heightPixels
         }
         return realHeight > usableHeight
     }
+
+
 }

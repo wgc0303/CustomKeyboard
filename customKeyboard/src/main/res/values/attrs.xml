@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="CustomKeyboard">
         <attr name="keyPadding" format="dimension" />
-        <attr name="keyTopPadding" format="dimension" />
+        <attr name="keyTopAndBottomPadding" format="dimension" />
         <attr name="keyTextSize" format="dimension" />
         <attr name="keyTextColor" format="color" />
         <attr name="keyNormalColor" format="color" />

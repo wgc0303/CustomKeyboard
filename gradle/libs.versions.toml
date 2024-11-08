@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.1"
+agp = "8.5.2"
 kotlin = "1.7.20"
 core-ktx = "1.7.0"
 junit = "4.13.2"
@@ -8,7 +8,9 @@ espresso-core = "3.5.1"
 appcompat = "1.4.1"
 material = "1.8.0"
 maven-publish = "0.29.0"
-customKeyboard = "1.0.4"
+customKeyboard = "1.1.1"
+immersionbar = "3.2.2"
+
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -18,6 +20,8 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 customKeyboard = { group = "io.github.wgc0303", name = "CustomKeyboard", version.ref = "customKeyboard" }
+immersionbar= { group = "com.geyifeng.immersionbar", name = "immersionbar", version.ref = "immersionbar" }
+immersionbar-ktx = { group = "com.geyifeng.immersionbar", name = "immersionbar-ktx", version.ref = "immersionbar" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

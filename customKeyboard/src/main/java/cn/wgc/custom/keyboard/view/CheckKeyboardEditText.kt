@@ -1,5 +1,6 @@
 package cn.wgc.custom.keyboard.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
@@ -44,7 +45,7 @@ class CheckKeyboardEditText : KeyboardEditText {
     private var isPhone = false
 
 
-    private  var textWatcher: TextWatcher = object : TextWatcher {
+    private var textWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
         }
 
@@ -65,10 +66,9 @@ class CheckKeyboardEditText : KeyboardEditText {
         init(context, attrs)
     }
 
-    constructor(
-        context: Context, attrs: AttributeSet,
-        defStyleAttr: Int
-    ) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context,
+                                                                                  attrs,
+                                                                                  defStyleAttr) {
         init(context, attrs)
     }
 
@@ -76,14 +76,12 @@ class CheckKeyboardEditText : KeyboardEditText {
     private fun init(context: Context, attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CheckKeyboardEditText)
         mode = typedArray.getInt(R.styleable.CheckKeyboardEditText_checkMode, -1)
-        passColor = typedArray.getColor(
-            R.styleable.CheckKeyboardEditText_checkPassColor,
-            ContextCompat.getColor(context, R.color.kb_text_default_dark)
-        )
-        errorColor = typedArray.getColor(
-            R.styleable.CheckKeyboardEditText_checkErrorColor,
-            resources.getColor(R.color.kb_text_error_color)
-        )
+        passColor = typedArray.getColor(R.styleable.CheckKeyboardEditText_checkPassColor,
+                                        ContextCompat.getColor(context,
+                                                               R.color.kb_text_default_dark))
+        errorColor = typedArray.getColor(R.styleable.CheckKeyboardEditText_checkErrorColor,
+                                         ContextCompat.getColor(context,
+                                                                R.color.kb_text_error_color))
         drawableEnable =
             typedArray.getBoolean(R.styleable.CheckKeyboardEditText_drawableEnable, true)
 
@@ -97,16 +95,17 @@ class CheckKeyboardEditText : KeyboardEditText {
             clearDrawable = ContextCompat.getDrawable(context, R.drawable.kb_clear)
         }
 
-        clearDrawable?.setBounds(
-            0, 0, clearDrawable!!.intrinsicWidth,
-            clearDrawable!!.intrinsicHeight
-        )
+        clearDrawable?.setBounds(0,
+                                 0,
+                                 clearDrawable!!.intrinsicWidth,
+                                 clearDrawable!!.intrinsicHeight)
         // 默认设置隐藏图标
         setClearIconVisible(false)
         // 设置焦点改变的监听
         // 设置输入框里面内容发生改变的监听
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
             if (isArrowClear) {
@@ -141,10 +140,10 @@ class CheckKeyboardEditText : KeyboardEditText {
     fun setClearIconVisible(visible: Boolean) {
         if (!drawableEnable || (visible && !hasViewFocus)) return
         val right = if (visible) clearDrawable else null
-        setCompoundDrawables(
-            compoundDrawables[0],
-            compoundDrawables[1], right, compoundDrawables[3]
-        )
+        setCompoundDrawables(compoundDrawables[0],
+                             compoundDrawables[1],
+                             right,
+                             compoundDrawables[3])
     }
 
 
@@ -153,24 +152,24 @@ class CheckKeyboardEditText : KeyboardEditText {
             ID_NUMBER -> {
                 val idCard18: Boolean = CheckUtil.checkIDNum(s.toString())
                 setFontColor(idCard18)
-                if (onCheckListener != null) onCheckListener?.checkIdNumResult(idCard18)
+                onCheckListener?.checkIdNumResult(idCard18)
             }
 
             NAME_MODE -> {
                 val isUsername: Boolean = CheckUtil.checkChineseName(s.toString())
                 setFontColor(isUsername)
-                if (onCheckListener != null) onCheckListener?.checkNameResult(isUsername)
+                onCheckListener?.checkNameResult(isUsername)
             }
 
             PHONE_MODE -> {
                 isPhone = CheckUtil.checkPhone(s.toString())
                 setFontColor(isPhone)
-                if (onCheckListener != null) onCheckListener?.checkPhoneResult(isPhone)
+                onCheckListener?.checkPhoneResult(isPhone)
             }
 
             PHONE_CODE_MODE -> {
                 setFontColor(s.toString().length == 6)
-                if (onCheckListener != null) onCheckListener?.checkPhoneCodeResult(s.toString().length == 6)
+                onCheckListener?.checkPhoneCodeResult(s.toString().length == 6)
             }
 
         }

@@ -45,6 +45,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(project(":customKeyboard"))
-//    implementation(libs.customKeyboard)
+//    implementation(project(":customKeyboard"))
+    implementation(libs.customKeyboard)
+//
+    implementation(libs.immersionbar)
+    implementation(libs.immersionbar.ktx)
 }

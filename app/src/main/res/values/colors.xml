@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#E1DBDB</color>
+    <color name="transparent_color">#00FFFFFF</color>
 
     <color name="dialog_status_bar_color">#66687C</color>
     <color name="dialog_transparent_color">#80000000</color>

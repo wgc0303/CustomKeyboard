@@ -49,12 +49,14 @@
             android:hint="数字密码键盘"
             app:keyboardType="numPwd" />
 
-        <cn.wgc.custom.keyboard.view.KeyboardEditText
+        <cn.wgc.custom.keyboard.view.CheckKeyboardEditText
+            android:id="@+id/etPhone"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
             android:hint="数字键盘"
             app:keyboardType="number"
+            app:checkMode="phone"
             app:pointInputEnable="false" />
 
         <EditText
@@ -89,6 +91,7 @@
             app:pointInputEnable="false" />
 
         <cn.wgc.custom.keyboard.view.CheckKeyboardEditText
+            android:id="@+id/edtIdNum"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
