@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.provider.Settings
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -22,6 +23,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.PopupWindow
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import cn.wgc.custom.keyboard.R
 import cn.wgc.custom.keyboard.util.KeyboardUtil
@@ -105,13 +107,13 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
                 //判断是否使用了沉浸式状态栏
                 val isImmersive =
                     (currentWindow!!.decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) != 0
-                val navigationBarHeight = if (isImmersive && hasNavigationBar(currentWindow!!,
-                                                                              context)
-                ) KeyboardUtil.getNavigationBarHeight(currentWindow!!, context) else 0
-                popupWindow.showAtLocation(contentParent,
-                                           Gravity.BOTTOM,
-                                           0,
-                                           popupLocationOffsetY + navigationBarHeight)
+//                var navigationBarHeight = if (isImmersive && hasNavigationBar(currentWindow!!,
+//                                                                              context)
+//                ) KeyboardUtil.getNavigationBarHeight(currentWindow!!, context) else 0
+
+                var navigationBarHeight =  KeyboardUtil.getNavigationBarHeight(currentWindow!!, context)
+                val offsetY = popupLocationOffsetY + navigationBarHeight
+                popupWindow.showAtLocation(contentParent, Gravity.BOTTOM, 0, offsetY)
                 if (start > 0) {
                     scrollView()
                 }
@@ -220,9 +222,9 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
                 viewTreeObserver?.removeOnGlobalLayoutListener(this)
                 //计算popupWindow显示位置的偏移量,主要考虑系统导航栏,如果是在dialog中使用需要调用KeyboardUtil计算
                 //通过调用setPopupLocationOffsetYOnDialog方法设置
-                if (!useDialogWindow) {
-                    popupLocationOffsetY = calculatePopupLocationOffsetY()
-                }
+//                if (!useDialogWindow) {
+//                    popupLocationOffsetY = calculatePopupLocationOffsetY()
+//                }
             }
         })
     }

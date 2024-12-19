@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -100,10 +101,12 @@ object KeyboardUtil {
         scrollView.isFocusableInTouchMode = true
     }
 
-    fun handDialogKeyboardStatus(dialog: Dialog,
-                                 contentView: View,
-                                 hasListener: Boolean,
-                                 vararg keyboardEditTexts: KeyboardEditText) {
+    fun handDialogKeyboardStatus(
+        dialog: Dialog,
+        contentView: View,
+        hasListener: Boolean,
+        vararg keyboardEditTexts: KeyboardEditText
+    ) {
         val dialogWindow = dialog.window!!
 
         keyboardEditTexts.forEach {
@@ -111,9 +114,9 @@ object KeyboardUtil {
         }
         if (!hasListener) {
             dialog.setOnShowListener {
-                handKeyboardLocation(dialog,
-                                     contentView,
-                                     keyboardEditTexts)
+                handKeyboardLocation(
+                    dialog, contentView, keyboardEditTexts
+                )
             }
         } else {
             handKeyboardLocation(dialog, contentView, keyboardEditTexts)
@@ -121,9 +124,9 @@ object KeyboardUtil {
 
     }
 
-    private fun handKeyboardLocation(dialog: Dialog,
-                                     contentView: View,
-                                     keyboardEditTexts: Array<out KeyboardEditText>) {
+    private fun handKeyboardLocation(
+        dialog: Dialog, contentView: View, keyboardEditTexts: Array<out KeyboardEditText>
+    ) {
         contentView.viewTreeObserver?.addOnGlobalLayoutListener(object :
                                                                     ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -142,13 +145,10 @@ object KeyboardUtil {
                 val location = IntArray(2)
                 contentView.getLocationOnScreen(location)
                 val start = location[1]
-                val navBarVisible = if (dialog.ownerActivity != null) {
-                    hasNavigationBar(dialog.ownerActivity!!.window, context)
-                } else {
-                    hasNavigationBar(((context as ContextWrapper).baseContext as Activity).window,
-                                     context)
-                }
-                val navigationBarHeight = if (navBarVisible) getNavigationBarHeight(context) else 0
+                val window=if (dialog.ownerActivity != null) dialog.ownerActivity!!.window else ((context as ContextWrapper).baseContext as Activity).window
+                val navBarVisible = hasNavigationBar(window, context)
+                Log.d("wgc","navBarVisible:$navBarVisible")
+                val navigationBarHeight = if (navBarVisible) getNavigationBarHeight(window,context) else 0
                 val attributes = dialog.window?.attributes
                 var popupOffsetY = if (attributes?.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
                     if (!navBarVisible) {
@@ -186,19 +186,20 @@ object KeyboardUtil {
     fun getNavigationBarHeight(context: Context): Int {
         val resources = context.resources
         val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
+        val navigationBarHeight =
+            if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
+        Log.d("wgc", "navigationBarHeight:  $navigationBarHeight    ")
+        return navigationBarHeight
     }
 
-    @SuppressLint("InternalInsetResource")
     fun getNavigationBarHeight(window: Window, context: Context): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val systemBars =
-                window.decorView.rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            return systemBars.bottom
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val insets = window.decorView.rootWindowInsets
+            val bottom = insets.systemGestureInsets.bottom
+            Log.d("wgc", "navigationBarHeight:  $bottom    ")
+            return bottom
         }
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
+        return getNavigationBarHeight(context)
     }
 
     @SuppressLint("InternalInsetResource")
@@ -227,7 +228,8 @@ object KeyboardUtil {
         } else {
             val metrics = DisplayMetrics()
             (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(
-                metrics)
+                metrics
+            )
             metrics.heightPixels
         }
         return realHeight > usableHeight
