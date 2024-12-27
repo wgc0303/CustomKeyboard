@@ -6,11 +6,9 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.provider.Settings
 import android.text.InputType
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -23,11 +21,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.PopupWindow
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import cn.wgc.custom.keyboard.R
 import cn.wgc.custom.keyboard.util.KeyboardUtil
-import cn.wgc.custom.keyboard.util.KeyboardUtil.hasNavigationBar
 import cn.wgc.custom.keyboard.view.CustomKeyboard.Companion.LETTER_TO_NUMBER_TYPE
 
 
@@ -54,6 +50,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
     private var popupLocationOffsetY = 0
     private var selfLocationOffsetY = 0
     private var useDialogWindow = false
+    private var autoHandlerPwdEnable = true
     private var currentWindow: Window? = null
 
     //获取屏幕的高度
@@ -85,6 +82,8 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
         val ty = context.obtainStyledAttributes(attrs, R.styleable.KeyboardEditText)
         keyboardType = ty.getInt(R.styleable.KeyboardEditText_keyboardType, LETTER_TO_NUMBER_TYPE)
         pointInputEnable = ty.getBoolean(R.styleable.KeyboardEditText_pointInputEnable, false)
+        autoHandlerPwdEnable =
+            ty.getBoolean(R.styleable.KeyboardEditText_autoHandlerPwdEnable, true)
         ty.recycle()
         onFocusChangeListener = this
         if (context is Activity) {
@@ -111,7 +110,8 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
 //                                                                              context)
 //                ) KeyboardUtil.getNavigationBarHeight(currentWindow!!, context) else 0
 
-                var navigationBarHeight =  KeyboardUtil.getNavigationBarHeight(currentWindow!!, context)
+                var navigationBarHeight =
+                    KeyboardUtil.getNavigationBarHeight(currentWindow!!, context)
                 val offsetY = popupLocationOffsetY + navigationBarHeight
                 popupWindow.showAtLocation(contentParent, Gravity.BOTTOM, 0, offsetY)
                 if (start > 0) {
@@ -183,10 +183,15 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
             }
 
             override fun onPwdStatusChange(pwdHide: Boolean) {
-                val start = selectionStart
-                inputType = if (pwdHide) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                else InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                setSelection(start)
+                if (autoHandlerPwdEnable) {
+                    val start = selectionStart
+                    inputType = if (pwdHide) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                    else InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    setSelection(start)
+                } else {
+                    pwdStatusChange(pwdHide)
+                }
+
             }
 
             override fun onKeyComplete() {
@@ -265,6 +270,10 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
             val height = locationStartY - start + height
             contentParent.scrollTo(0, height)
         }
+    }
+
+    open fun pwdStatusChange(isHide: Boolean) {
+
     }
 
     private fun dp2px(dp: Float): Int {

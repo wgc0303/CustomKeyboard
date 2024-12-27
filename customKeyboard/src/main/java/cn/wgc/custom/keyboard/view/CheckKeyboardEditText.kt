@@ -37,6 +37,10 @@ class CheckKeyboardEditText : KeyboardEditText {
     private var mode = 0
     private var passColor = 0
     private var errorColor = 0
+    private var checkCodeLen = 4
+    private var checkPhoneLen = 11
+    private var checkNameLen = 15
+    private var checkIdNumLen = 18
     private var clearDrawable: Drawable? = null //删除按钮
     private var onCheckListener: OnCheckListener? = null
     private var hasViewFocus = false
@@ -76,6 +80,14 @@ class CheckKeyboardEditText : KeyboardEditText {
     private fun init(context: Context, attrs: AttributeSet) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CheckKeyboardEditText)
         mode = typedArray.getInt(R.styleable.CheckKeyboardEditText_checkMode, -1)
+        checkCodeLen =
+            typedArray.getInt(R.styleable.CheckKeyboardEditText_checkCodeLen, checkCodeLen)
+        checkPhoneLen =
+            typedArray.getInt(R.styleable.CheckKeyboardEditText_checkPhoneLen, checkPhoneLen)
+        checkNameLen =
+            typedArray.getInt(R.styleable.CheckKeyboardEditText_checkNameLen, checkNameLen)
+        checkIdNumLen =
+            typedArray.getInt(R.styleable.CheckKeyboardEditText_checkIdNumLen, checkIdNumLen)
         passColor = typedArray.getColor(R.styleable.CheckKeyboardEditText_checkPassColor,
                                         ContextCompat.getColor(context,
                                                                R.color.kb_text_default_dark))
@@ -168,8 +180,8 @@ class CheckKeyboardEditText : KeyboardEditText {
             }
 
             PHONE_CODE_MODE -> {
-                setFontColor(s.toString().length == 6)
-                onCheckListener?.checkPhoneCodeResult(s.toString().length == 6)
+                setFontColor(s.toString().length == checkCodeLen)
+                onCheckListener?.checkPhoneCodeResult(s.toString().length == checkCodeLen)
             }
 
         }
@@ -186,10 +198,10 @@ class CheckKeyboardEditText : KeyboardEditText {
 
     private fun setTextMaxLength() {
         when (mode) {
-            ID_NUMBER -> filters = arrayOf<InputFilter>(LengthFilter(18))
-            NAME_MODE -> filters = arrayOf<InputFilter>(LengthFilter(15))
-            PHONE_MODE -> filters = arrayOf<InputFilter>(LengthFilter(11))
-            PHONE_CODE_MODE -> filters = arrayOf<InputFilter>(LengthFilter(6))
+            ID_NUMBER -> filters = arrayOf<InputFilter>(LengthFilter(checkIdNumLen))
+            NAME_MODE -> filters = arrayOf<InputFilter>(LengthFilter(checkNameLen))
+            PHONE_MODE -> filters = arrayOf<InputFilter>(LengthFilter(checkPhoneLen))
+            PHONE_CODE_MODE -> filters = arrayOf<InputFilter>(LengthFilter(checkCodeLen))
         }
     }
 

@@ -12,6 +12,7 @@
 
     <declare-styleable name="KeyboardEditText">
         <attr name="pointInputEnable" format="boolean" />
+        <attr name="autoHandlerPwdEnable" format="boolean" />
         <attr name="keyboardType" format="enum">
             <enum name="number" value="0" />
             <enum name="idNumber" value="1" />
@@ -32,5 +33,9 @@
         <attr name="checkPassColor" format="color" />
         <attr name="checkErrorColor" format="color" />
         <attr name="drawableEnable" format="boolean" />
+        <attr name="checkCodeLen" format="integer" />
+        <attr name="checkPhoneLen" format="integer" />
+        <attr name="checkIdNumLen" format="integer" />
+        <attr name="checkNameLen" format="integer" />
     </declare-styleable>
 </resources>
