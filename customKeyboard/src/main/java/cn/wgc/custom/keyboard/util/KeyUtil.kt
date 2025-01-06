@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.PointF
 import android.graphics.RectF
 import cn.wgc.custom.keyboard.entity.KeyEntity
-import java.util.ArrayList
 
 /**
  * <pre>
@@ -53,6 +52,33 @@ object KeyUtil {
             add(KeyEntity(48, "0"))
             add(KeyEntity(-5, "delete"))
         }
+    }
+
+    //生成打乱的数字密码键盘keys
+    fun generateShufflePwdKeyEntities(): ArrayList<KeyEntity> {
+        val temp = arrayListOf<KeyEntity>().apply {
+            add(KeyEntity(49, "1"))
+            add(KeyEntity(50, "2"))
+            add(KeyEntity(51, "3"))
+            add(KeyEntity(52, "4"))
+            add(KeyEntity(53, "5"))
+            add(KeyEntity(54, "6"))
+            add(KeyEntity(55, "7"))
+            add(KeyEntity(56, "8"))
+            add(KeyEntity(57, "9"))
+            add(KeyEntity(48, "0"))
+        }
+        temp.shuffle()
+        val result = arrayListOf<KeyEntity>()
+        for (i in 0 until temp.size) {
+            result.add(temp[i])
+            if (i == temp.size - 1) {
+                result.add(KeyEntity(-5, "delete"))
+            } else if (i == temp.size - 2) {
+                result.add(KeyEntity(-4399, "show"))
+            }
+        }
+        return result
     }
 
     //生成身份证键盘keys
@@ -134,8 +160,6 @@ object KeyUtil {
         if (point == null) return false
         return (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom)
     }
-
-
 
 
     fun dp2px(context: Context, dp: Float): Int {

@@ -10,6 +10,7 @@ import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import cn.wgc.custom.keyboard.R
@@ -45,6 +46,8 @@ class CustomKeyboard : View {
     private val num2LetterKeys by lazy { KeyUtil.generateNum2LetterKeyEntities() }
     private val letter2NumKeys by lazy { KeyUtil.generateLetter2NumKeyEntities() }
     private val numPwdKeys by lazy { KeyUtil.generatePwdKeyEntities() }
+
+    //    private val shuffleNumPwdKeys by lazy { KeyUtil.generateShufflePwdKeyEntities() }
     private var keys: ArrayList<KeyEntity> = arrayListOf()
 
 
@@ -77,6 +80,7 @@ class CustomKeyboard : View {
     private var capitalKeyChange = false
     private var pointInputEnable = false
     private var pwdHide = true
+    private var shufflePwdKey = false
 
     private var currentKeyEntity: KeyEntity? = null
     private var currentKeyDownPosition = -1
@@ -118,9 +122,13 @@ class CustomKeyboard : View {
             ID_CARD_TYPE -> idNumKeys
             NUMBER_TO_LETTER_TYPE -> num2LetterKeys
             LETTER_TO_NUMBER_TYPE -> letter2NumKeys
-            PWD_TYPE -> numPwdKeys
+            PWD_TYPE -> if (!shufflePwdKey) numPwdKeys else KeyUtil.generateShufflePwdKeyEntities()
             else -> letter2NumKeys
         }
+    }
+
+    fun shufflePwdKeyEnable(shufflePwdKey: Boolean) {
+        this.shufflePwdKey = shufflePwdKey
     }
 
     fun setPointInputEnable(enable: Boolean) {
@@ -140,6 +148,7 @@ class CustomKeyboard : View {
 
 
     fun changeKeyboardType(type: Int) {
+        Log.d("wgc", "changeKeyboardType222")
         keyboardType = type
         generateKeys()
         requestLayout()

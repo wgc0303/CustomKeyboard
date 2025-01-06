@@ -45,6 +45,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
     private var keyboardType = LETTER_TO_NUMBER_TYPE
     private lateinit var popupWindow: PopupWindow
     private var pointInputEnable = false
+    private var shufflePwdKey = false
     private var start: Int = 0
     private var locationStartY = 0
     private var popupLocationOffsetY = 0
@@ -82,6 +83,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
         val ty = context.obtainStyledAttributes(attrs, R.styleable.KeyboardEditText)
         keyboardType = ty.getInt(R.styleable.KeyboardEditText_keyboardType, LETTER_TO_NUMBER_TYPE)
         pointInputEnable = ty.getBoolean(R.styleable.KeyboardEditText_pointInputEnable, false)
+        shufflePwdKey = ty.getBoolean(R.styleable.KeyboardEditText_shufflePwdKey, false)
         autoHandlerPwdEnable =
             ty.getBoolean(R.styleable.KeyboardEditText_autoHandlerPwdEnable, true)
         ty.recycle()
@@ -168,6 +170,7 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
         }
         keyboardView.changeKeyboardType(keyboardType)
         keyboardView.setPointInputEnable(pointInputEnable)
+        keyboardView.shufflePwdKeyEnable(shufflePwdKey)
         keyboardView.addOnKeyListener(object : CustomKeyboard.OnKeyListener {
             override fun onKeyboardTypeChange(type: Int) {
             }

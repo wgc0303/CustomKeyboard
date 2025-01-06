@@ -47,6 +47,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="30dp"
             android:hint="数字密码键盘"
+            app:shufflePwdKey="true"
             app:keyboardType="numPwd" />
 
         <cn.wgc.custom.keyboard.view.CheckKeyboardEditText
