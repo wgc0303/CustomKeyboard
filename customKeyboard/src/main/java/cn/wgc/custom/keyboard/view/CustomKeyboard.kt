@@ -77,7 +77,7 @@ class CustomKeyboard : View {
 
     private var capitalEnable = true
     private var totalKeyChange = false
-    private var capitalKeyChange = false
+    private var capitalKeyChange = true
     private var pointInputEnable = false
     private var pwdHide = true
     private var shufflePwdKey = false
@@ -91,9 +91,11 @@ class CustomKeyboard : View {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context,
-                                                                                  attrs,
-                                                                                  defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(context, attrs)
     }
 
@@ -107,8 +109,10 @@ class CustomKeyboard : View {
         keyPadding = ty.getDimension(R.styleable.CustomKeyboard_keyPadding, dp2px(1.5F).toFloat())
         keyDrawableSize =
             ty.getDimension(R.styleable.CustomKeyboard_keyDrawableSize, dp2px(18F).toFloat())
-        keyTopAndBottomPadding = ty.getDimension(R.styleable.CustomKeyboard_keyTopAndBottomPadding,
-                                                 dp2px(1.5F).toFloat())
+        keyTopAndBottomPadding = ty.getDimension(
+            R.styleable.CustomKeyboard_keyTopAndBottomPadding,
+            dp2px(1.5F).toFloat()
+        )
         ty.recycle()
         rectPaint.color = Color.WHITE
         textPaint.textSize = keyTextSize
@@ -373,10 +377,12 @@ class CustomKeyboard : View {
 
                 -50 -> {
                     //隐藏图标宽高比4:3
-                    val rectF = RectF(cx - keyDrawableSize / 3 * 4 / 2,
-                                      cy - keyDrawableSize / 2,
-                                      cx + keyDrawableSize / 3 * 4 / 2,
-                                      cy + keyDrawableSize / 2)
+                    val rectF = RectF(
+                        cx - keyDrawableSize / 3 * 4 / 2,
+                        cy - keyDrawableSize / 2,
+                        cx + keyDrawableSize / 3 * 4 / 2,
+                        cy + keyDrawableSize / 2
+                    )
                     textPaint.style = Paint.Style.STROKE
                     textPaint.strokeWidth = dp2px(2f).toFloat()
                     canvas.drawRoundRect(rectF, keyDrawableSize / 5, keyDrawableSize / 5, textPaint)
@@ -411,7 +417,12 @@ class CustomKeyboard : View {
             }
 
             -1 -> {
-                capitalKeyChange = true
+//                capitalKeyChange = true
+//                if (capitalKeyChange) {
+                changeCapital(!capitalEnable)
+                Log.d("wgc", "6666666")
+//                    capitalKeyChange = false
+//                }
             }
 
             -2 -> {
@@ -498,10 +509,6 @@ class CustomKeyboard : View {
                     refreshKeyboard()
                 }
 
-                if (capitalKeyChange) {
-                    capitalKeyChange = false
-                    changeCapital(!capitalEnable)
-                }
                 invalidate()
             }
         }
