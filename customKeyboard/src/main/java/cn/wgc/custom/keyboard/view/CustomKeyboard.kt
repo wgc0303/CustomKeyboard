@@ -77,7 +77,7 @@ class CustomKeyboard : View {
 
     private var capitalEnable = true
     private var totalKeyChange = false
-    private var capitalKeyChange = true
+    private var capitalKeyChange = false
     private var pointInputEnable = false
     private var pwdHide = true
     private var shufflePwdKey = false
@@ -91,11 +91,9 @@ class CustomKeyboard : View {
         init(context, attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context,
+                                                                                  attrs,
+                                                                                  defStyleAttr) {
         init(context, attrs)
     }
 
@@ -109,10 +107,8 @@ class CustomKeyboard : View {
         keyPadding = ty.getDimension(R.styleable.CustomKeyboard_keyPadding, dp2px(1.5F).toFloat())
         keyDrawableSize =
             ty.getDimension(R.styleable.CustomKeyboard_keyDrawableSize, dp2px(18F).toFloat())
-        keyTopAndBottomPadding = ty.getDimension(
-            R.styleable.CustomKeyboard_keyTopAndBottomPadding,
-            dp2px(1.5F).toFloat()
-        )
+        keyTopAndBottomPadding = ty.getDimension(R.styleable.CustomKeyboard_keyTopAndBottomPadding,
+                                                 dp2px(1.5F).toFloat())
         ty.recycle()
         rectPaint.color = Color.WHITE
         textPaint.textSize = keyTextSize
@@ -283,8 +279,8 @@ class CustomKeyboard : View {
     }
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
         drawNumberKeys(canvas)
+        super.onDraw(canvas)
     }
 
     private fun changeCapital(capitalEnable: Boolean) {
@@ -304,15 +300,18 @@ class CustomKeyboard : View {
     }
 
     private fun drawNumberKeys(canvas: Canvas) {
+        Log.d("wgc", "ACTION__UP downPoint $downPoint")
         for (i in 0 until keys.size) {
             //绘制键盘框
             val rectF = numberKeyRect[i]
             val contains = KeyUtil.rectContainsPoint(downPoint, rectF)
+
             val keyEntity = keys[i]
             if (contains) {
                 currentKeyEntity = keyEntity
                 currentKeyDownPosition = i
             }
+
             rectPaint.color = if (contains) keyPressColor else keyNormalColor
             canvas.drawRect(rectF.left, rectF.top, rectF.right, rectF.bottom, rectPaint)
 
@@ -377,12 +376,10 @@ class CustomKeyboard : View {
 
                 -50 -> {
                     //隐藏图标宽高比4:3
-                    val rectF = RectF(
-                        cx - keyDrawableSize / 3 * 4 / 2,
-                        cy - keyDrawableSize / 2,
-                        cx + keyDrawableSize / 3 * 4 / 2,
-                        cy + keyDrawableSize / 2
-                    )
+                    val rectF = RectF(cx - keyDrawableSize / 3 * 4 / 2,
+                                      cy - keyDrawableSize / 2,
+                                      cx + keyDrawableSize / 3 * 4 / 2,
+                                      cy + keyDrawableSize / 2)
                     textPaint.style = Paint.Style.STROKE
                     textPaint.strokeWidth = dp2px(2f).toFloat()
                     canvas.drawRoundRect(rectF, keyDrawableSize / 5, keyDrawableSize / 5, textPaint)
@@ -417,12 +414,7 @@ class CustomKeyboard : View {
             }
 
             -1 -> {
-//                capitalKeyChange = true
-//                if (capitalKeyChange) {
-                changeCapital(!capitalEnable)
-                Log.d("wgc", "6666666")
-//                    capitalKeyChange = false
-//                }
+                capitalKeyChange = true
             }
 
             -2 -> {
@@ -476,6 +468,8 @@ class CustomKeyboard : View {
                 downTime = event.downTime
                 lastTime = 0L
                 downPoint = PointF(event.x, event.y)
+                //计算当前位置按键，必需提前计算，初次按下时会有问题
+                calculateCurrentKey()
                 invalidate()
             }
 
@@ -492,7 +486,6 @@ class CustomKeyboard : View {
                         lastTime = eventTime
                         if (lastTime - downTime >= 800L) {
                             currentKeyEntity?.let { keyCallback(it.keyValue) }
-
                         }
 
                     }
@@ -509,10 +502,28 @@ class CustomKeyboard : View {
                     refreshKeyboard()
                 }
 
+                if (capitalKeyChange) {
+                    capitalKeyChange = false
+                    changeCapital(!capitalEnable)
+                }
                 invalidate()
             }
         }
         return true
+    }
+
+   private fun calculateCurrentKey() {
+        for (i in 0 until keys.size) {
+            //绘制键盘框
+            val rectF = numberKeyRect[i]
+            val contains = KeyUtil.rectContainsPoint(downPoint, rectF)
+
+            val keyEntity = keys[i]
+            if (contains) {
+                currentKeyEntity = keyEntity
+                currentKeyDownPosition = i
+            }
+        }
     }
 
 
