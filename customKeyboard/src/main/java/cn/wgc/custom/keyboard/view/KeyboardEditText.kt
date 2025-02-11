@@ -279,6 +279,13 @@ open class KeyboardEditText : AppCompatEditText, View.OnFocusChangeListener {
 
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        if(popupWindow.isShowing){
+            popupWindow.dismiss()
+        }
+    }
+
     private fun dp2px(dp: Float): Int {
         val scale = context.resources.displayMetrics.density
         return (dp * scale + 0.5f).toInt()
