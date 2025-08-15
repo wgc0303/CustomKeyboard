@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_keyboard"
     android:layout_width="match_parent"
-    android:background="@color/kb_gray"
+    android:background="@color/kb_bg_gray"
     android:layout_height="244dp"
     tools:ignore="MissingDefaultResource">
 </cn.wgc.custom.keyboard.view.CustomKeyboard>

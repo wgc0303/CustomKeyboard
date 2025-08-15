@@ -158,7 +158,9 @@ object KeyUtil {
 
     fun rectContainsPoint(point: PointF?, rect: RectF): Boolean {
         if (point == null) return false
-        return (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom)
+        val contains =
+            (point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom)
+        return contains
     }
 
 

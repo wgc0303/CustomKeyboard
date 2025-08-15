@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "cn.wgc.custom.keyboard"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
@@ -43,7 +43,7 @@ dependencies {
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
-    coordinates("io.github.wgc0303", "CustomKeyboard", "1.1.7")
+    coordinates("io.github.wgc0303", "CustomKeyboard", "1.1.8")
     pom {
         name.set("custom-keyboard")
         description.set("Simple number keyboard, ID card keyboard, letter keyboard")

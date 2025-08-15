@@ -10,9 +10,10 @@ import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import cn.wgc.custom.keyboard.R
 import cn.wgc.custom.keyboard.entity.KeyEntity
 import cn.wgc.custom.keyboard.util.KeyUtil
@@ -31,7 +32,6 @@ import cn.wgc.custom.keyboard.util.KeyUtil
 class CustomKeyboard : View {
 
     companion object {
-
         const val NUMBER_TYPE = 0 //数字键盘类型
         const val ID_CARD_TYPE = 1 //身份证键盘
         const val NUMBER_TO_LETTER_TYPE = 2 //数字转英语键盘
@@ -40,22 +40,17 @@ class CustomKeyboard : View {
         const val KEYBOARD_LINE = 4
     }
 
-
     private val numKeys by lazy { KeyUtil.generateNumKeyEntities() }
     private val idNumKeys by lazy { KeyUtil.generateIdNumKeyEntities() }
     private val num2LetterKeys by lazy { KeyUtil.generateNum2LetterKeyEntities() }
     private val letter2NumKeys by lazy { KeyUtil.generateLetter2NumKeyEntities() }
     private val numPwdKeys by lazy { KeyUtil.generatePwdKeyEntities() }
-
-    //    private val shuffleNumPwdKeys by lazy { KeyUtil.generateShufflePwdKeyEntities() }
     private var keys: ArrayList<KeyEntity> = arrayListOf()
-
 
     private var numberKeyRect = arrayListOf<RectF>()
     private var keyTextColor: Int = 0
     private var keyNormalColor: Int = 0
     private var keyPressColor: Int = 0
-
     private var keyTextSize = 0f
     private var keyPadding = 0f
     private var keyDrawableSize = 0f
@@ -68,7 +63,6 @@ class CustomKeyboard : View {
 
     //通用键宽
     private var keyWidth = 0f
-
 
     private val rectPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -97,23 +91,23 @@ class CustomKeyboard : View {
         init(context, attrs)
     }
 
-
     private fun init(context: Context, attrs: AttributeSet) {
-        val ty = context.obtainStyledAttributes(attrs, R.styleable.CustomKeyboard)
-        keyTextColor = ty.getColor(R.styleable.CustomKeyboard_keyTextColor, Color.BLACK)
-        keyNormalColor = ty.getColor(R.styleable.CustomKeyboard_keyNormalColor, Color.WHITE)
-        keyPressColor = ty.getColor(R.styleable.CustomKeyboard_keyPressColor, Color.GRAY)
-        keyTextSize = ty.getDimension(R.styleable.CustomKeyboard_keyTextSize, sp2px(24F).toFloat())
-        keyPadding = ty.getDimension(R.styleable.CustomKeyboard_keyPadding, dp2px(1.5F).toFloat())
-        keyDrawableSize =
-            ty.getDimension(R.styleable.CustomKeyboard_keyDrawableSize, dp2px(18F).toFloat())
-        keyTopAndBottomPadding = ty.getDimension(R.styleable.CustomKeyboard_keyTopAndBottomPadding,
-                                                 dp2px(1.5F).toFloat())
-        ty.recycle()
+        context.withStyledAttributes(attrs, R.styleable.CustomKeyboard) {
+            keyTextColor = getColor(R.styleable.CustomKeyboard_keyTextColor, Color.BLACK)
+            keyNormalColor = getColor(R.styleable.CustomKeyboard_keyNormalColor, Color.WHITE)
+            keyPressColor = getColor(R.styleable.CustomKeyboard_keyPressColor,
+                                     ContextCompat.getColor(context, R.color.kb_press_color))
+            keyTextSize = getDimension(R.styleable.CustomKeyboard_keyTextSize, sp2px(24F).toFloat())
+            keyPadding = getDimension(R.styleable.CustomKeyboard_keyPadding, dp2px(1.5F).toFloat())
+            keyDrawableSize =
+                getDimension(R.styleable.CustomKeyboard_keyDrawableSize, dp2px(18F).toFloat())
+            keyTopAndBottomPadding = getDimension(R.styleable.CustomKeyboard_keyTopAndBottomPadding,
+                                                  dp2px(1.5F).toFloat())
+        }
         rectPaint.color = Color.WHITE
+        textPaint.color = keyTextColor
         textPaint.textSize = keyTextSize
         generateKeys()
-
     }
 
     private fun generateKeys() {
@@ -146,9 +140,7 @@ class CustomKeyboard : View {
         pointInputEnable = enable
     }
 
-
     fun changeKeyboardType(type: Int) {
-        Log.d("wgc", "changeKeyboardType222")
         keyboardType = type
         generateKeys()
         requestLayout()
@@ -162,21 +154,23 @@ class CustomKeyboard : View {
     @SuppressLint("DrawAllocation")
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        val h = bottom - top
-        val w = right - left
+
+        val availableWidth = (width - paddingLeft - paddingRight).toFloat()
+        val availableHeight = (height - paddingTop - paddingBottom).toFloat()
+
+        if (availableWidth <= 0 || availableHeight <= 0) return
+
         keyHeight =
-            (h - keyPadding * (KEYBOARD_LINE - 1) - keyTopAndBottomPadding * 2) / KEYBOARD_LINE
+            (availableHeight - keyPadding * (KEYBOARD_LINE - 1) - keyTopAndBottomPadding * 2) / KEYBOARD_LINE
 
         when (keyboardType) {
-            //数字键盘,身份证键盘3列,数字密码键盘
             NUMBER_TYPE, ID_CARD_TYPE, PWD_TYPE, NUMBER_TO_LETTER_TYPE -> {
-                keyWidth = (w - keyPadding * (3 - 1)) / 3
-                //计算通用含数字键盘的矩阵
+                keyWidth = (availableWidth - keyPadding * (3 - 1)) / 3
                 calculateCommonNumKeyRect()
             }
-            //字母键盘一行按10个标准字母键计算
+
             else -> {
-                keyWidth = (w - keyPadding * (10 - 1)) / 10
+                keyWidth = (availableWidth - keyPadding * (10 - 1)) / 10
                 calculateLetterKeyRect()
             }
         }
@@ -187,15 +181,13 @@ class CustomKeyboard : View {
         for (i in 0 until keys.size) {
             val xPosition = i % 3
             val yPosition = i / 3
-            val left = (keyWidth + keyPadding) * xPosition
-            val right = keyWidth * (xPosition + 1) + xPosition * keyPadding
-            val top = keyTopAndBottomPadding + yPosition * keyPadding + yPosition * keyHeight
-            val bottom =
-                keyTopAndBottomPadding + yPosition * keyPadding + (yPosition + 1) * keyHeight
+            val left = xPosition * (keyWidth + keyPadding)
+            val right = left + keyWidth
+            val top = keyTopAndBottomPadding + yPosition * (keyHeight + keyPadding)
+            val bottom = top + keyHeight
             numberKeyRect.add(RectF(left, top, right, bottom))
         }
     }
-
 
     private fun calculateLetterKeyRect() {
         numberKeyRect.clear()
@@ -278,15 +270,16 @@ class CustomKeyboard : View {
         }
     }
 
+
     override fun onDraw(canvas: Canvas) {
-        drawNumberKeys(canvas)
         super.onDraw(canvas)
+        drawNumberKeys(canvas)
     }
 
     private fun changeCapital(capitalEnable: Boolean) {
         val lowercase = "abcdefghijklmnopqrstuvwxyz"
         keys.forEach {
-            if (it.keyName.isNotEmpty() && lowercase.indexOf(it.keyName.lowercase()) != -1) {
+            if (it.keyName.isNotEmpty() && lowercase.contains(it.keyName.lowercase())) {
                 if (capitalEnable) {
                     it.keyName = it.keyName.uppercase()
                     it.keyValue -= 32
@@ -300,29 +293,20 @@ class CustomKeyboard : View {
     }
 
     private fun drawNumberKeys(canvas: Canvas) {
-        Log.d("wgc", "ACTION__UP downPoint $downPoint")
+        if (numberKeyRect.size != keys.size) return
+
         for (i in 0 until keys.size) {
-            //绘制键盘框
             val rectF = numberKeyRect[i]
-            val contains = KeyUtil.rectContainsPoint(downPoint, rectF)
-
             val keyEntity = keys[i]
-            if (contains) {
-                currentKeyEntity = keyEntity
-                currentKeyDownPosition = i
-            }
+            val isPressed = (currentKeyDownPosition == i)
+            rectPaint.color = if (isPressed) keyPressColor else keyNormalColor
+            canvas.drawRect(rectF, rectPaint)
 
-            rectPaint.color = if (contains) keyPressColor else keyNormalColor
-            canvas.drawRect(rectF.left, rectF.top, rectF.right, rectF.bottom, rectPaint)
-
-            //绘制键盘文字和图标
-            val cx = rectF.left + (rectF.right - rectF.left) / 2
-            val cy = rectF.top + (rectF.bottom - rectF.top) / 2
-
+            val cx = rectF.centerX()
+            val cy = rectF.centerY()
 
             when (keyEntity.keyValue) {
                 -1 -> {
-                    //切换大小写图标宽高比2:3
                     val path = Path()
                     path.moveTo(cx, cy - keyDrawableSize / 2)
                     path.lineTo(cx - keyDrawableSize / 2, cy)
@@ -340,7 +324,6 @@ class CustomKeyboard : View {
 
                 -4399 -> {
                     val path = Path()
-                    //绘制密码可图标
                     path.moveTo(cx - keyDrawableSize / 4 * 3, cy)
                     path.quadTo(cx, cy - keyDrawableSize, cx + keyDrawableSize / 4 * 3, cy)
                     path.quadTo(cx, cy + keyDrawableSize, cx - keyDrawableSize / 4 * 3, cy)
@@ -356,7 +339,6 @@ class CustomKeyboard : View {
                 }
 
                 -5 -> {
-                    //删除图标宽高比3:2
                     val path = Path()
                     path.moveTo(cx - keyDrawableSize / 3 * 2, cy)
                     path.lineTo(cx - keyDrawableSize / 3, cy - keyDrawableSize / 2)
@@ -371,11 +353,9 @@ class CustomKeyboard : View {
                     textPaint.style = Paint.Style.STROKE
                     textPaint.strokeWidth = dp2px(2f).toFloat()
                     canvas.drawPath(path, textPaint)
-
                 }
 
                 -50 -> {
-                    //隐藏图标宽高比4:3
                     val rectF = RectF(cx - keyDrawableSize / 3 * 4 / 2,
                                       cy - keyDrawableSize / 2,
                                       cx + keyDrawableSize / 3 * 4 / 2,
@@ -392,13 +372,10 @@ class CustomKeyboard : View {
 
                 else -> {
                     textPaint.style = Paint.Style.FILL
-                    //绘制文字
                     val text = keyEntity.keyName
                     val rect = Rect()
                     textPaint.getTextBounds(text, 0, text.length, rect)
-                    //文字宽
                     val textWidth = rect.width()
-                    //文字高
                     val textHeight = rect.height()
                     canvas.drawText(text, (cx - textWidth / 2), (cy + textHeight / 2), textPaint)
                 }
@@ -407,7 +384,6 @@ class CustomKeyboard : View {
     }
 
     private fun keyCallback(keyValue: Int) {
-
         when (keyValue) {
             46 -> {
                 if (pointInputEnable) onKeyListener?.onKeyPress(keyValue)
@@ -418,32 +394,24 @@ class CustomKeyboard : View {
             }
 
             -2 -> {
-                totalKeyChange = true
-                keyboardType = NUMBER_TO_LETTER_TYPE
-                onKeyListener?.onKeyboardTypeChange(NUMBER_TO_LETTER_TYPE)
+                totalKeyChange = true; keyboardType =
+                    NUMBER_TO_LETTER_TYPE; onKeyListener?.onKeyboardTypeChange(NUMBER_TO_LETTER_TYPE)
             }
 
             -4 -> {
-                totalKeyChange = true
-                keyboardType = LETTER_TO_NUMBER_TYPE
-                onKeyListener?.onKeyboardTypeChange(LETTER_TO_NUMBER_TYPE)
+                totalKeyChange = true; keyboardType =
+                    LETTER_TO_NUMBER_TYPE; onKeyListener?.onKeyboardTypeChange(LETTER_TO_NUMBER_TYPE)
             }
 
             -5 -> onKeyListener?.onKeyDelete()
-
-            -50 -> {
-                onKeyListener?.onKeyComplete()
-            }
-
+            -50 -> onKeyListener?.onKeyComplete()
             -4399 -> {
-                pwdHide = !pwdHide
-                onKeyListener?.onPwdStatusChange(pwdHide)
+                pwdHide = !pwdHide; onKeyListener?.onPwdStatusChange(pwdHide)
             }
 
             else -> onKeyListener?.onKeyPress(keyValue)
         }
     }
-
 
     private fun dp2px(dp: Float): Int {
         val scale = context.resources.displayMetrics.density
@@ -455,77 +423,76 @@ class CustomKeyboard : View {
         return (sp * fontScale + 0.5f).toInt()
     }
 
-
     private var lastTime = 0L
     private var downTime = 0L
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
+        val touchX = event.x - paddingLeft
+        val touchY = event.y - paddingTop
+        downPoint = PointF(touchX, touchY)
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 downTime = event.downTime
                 lastTime = 0L
-                downPoint = PointF(event.x, event.y)
-                //计算当前位置按键，必需提前计算，初次按下时会有问题
                 calculateCurrentKey()
                 invalidate()
             }
 
             MotionEvent.ACTION_MOVE -> {
                 if (currentKeyDownPosition != -1) {
-                    val downTime = event.downTime
-                    val eventTime = event.eventTime
-                    if (lastTime == 0L) lastTime = eventTime
-                    val x = event.x
-                    val y = event.y
                     val downRect = numberKeyRect[currentKeyDownPosition]
-                    val contains = KeyUtil.rectContainsPoint(PointF(x, y), downRect)
-                    if (contains && eventTime - lastTime > 100L) {
-                        lastTime = eventTime
+                    if (downRect.contains(downPoint!!.x,
+                                          downPoint!!.y) && event.eventTime - lastTime > 70L
+                    ) {
+                        lastTime = event.eventTime
                         if (lastTime - downTime >= 800L) {
                             currentKeyEntity?.let { keyCallback(it.keyValue) }
                         }
-
                     }
                 }
-
             }
 
-            MotionEvent.ACTION_UP -> {
-                downPoint = null
-                currentKeyDownPosition = -1
-                currentKeyEntity?.let { keyCallback(it.keyValue) }
-                if (totalKeyChange) {
-                    totalKeyChange = false
-                    refreshKeyboard()
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                val upKeyEntity = findKeyForPoint(downPoint)
+                if (upKeyEntity != null && upKeyEntity.keyValue == currentKeyEntity?.keyValue) {
+                    keyCallback(upKeyEntity.keyValue)
                 }
 
-                if (capitalKeyChange) {
-                    capitalKeyChange = false
-                    changeCapital(!capitalEnable)
-                }
-                invalidate()
+                postDelayed({
+                                currentKeyDownPosition = -1
+                                currentKeyEntity = null
+
+                                if (totalKeyChange) {
+                                    totalKeyChange = false; refreshKeyboard()
+                                }
+                                if (capitalKeyChange) {
+                                    capitalKeyChange = false; changeCapital(!capitalEnable)
+                                }
+
+                                invalidate()
+                            }, 50)
             }
         }
         return true
     }
 
-   private fun calculateCurrentKey() {
-        for (i in 0 until keys.size) {
-            //绘制键盘框
-            val rectF = numberKeyRect[i]
-            val contains = KeyUtil.rectContainsPoint(downPoint, rectF)
-
-            val keyEntity = keys[i]
-            if (contains) {
-                currentKeyEntity = keyEntity
-                currentKeyDownPosition = i
-            }
-        }
+    private fun calculateCurrentKey() {
+        currentKeyEntity = findKeyForPoint(downPoint)
+        currentKeyDownPosition =
+            if (currentKeyEntity != null) keys.indexOf(currentKeyEntity) else -1
     }
 
+    private fun findKeyForPoint(point: PointF?): KeyEntity? {
+        if (point == null || numberKeyRect.size != keys.size) return null
+        for (i in 0 until keys.size) {
+            if (numberKeyRect[i].contains(point.x, point.y)) {
+                return keys[i]
+            }
+        }
+        return null
+    }
 
     fun addOnKeyListener(listener: OnKeyListener) {
         onKeyListener = listener
@@ -539,4 +506,3 @@ class CustomKeyboard : View {
         fun onKeyComplete()
     }
 }
-

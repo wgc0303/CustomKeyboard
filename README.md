@@ -25,21 +25,22 @@ implementation 'io.github.wgc0303:CustomKeyboard:1.1.5'
 
 # Dialog中使用需要特殊处理
 
-因在dialog的window中显示键盘布局会随着布局参数的变化会有些异常，需要特殊处理，可分为以下两种情况：
-
-1、不监听dialog的show事件。可直接在setContentView后做如下处理
+1、dialogWindow的高度属性必须设置成ViewGroup.LayoutParams.MATCH_PAREN，键盘的位置才能在底部位置。
 
 ```kotlin
-KeyboardUtil.handDialogKeyboardStatus(this, contentView, false, etLetter, etIdNumber, etNumber)
+        dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                               ViewGroup.LayoutParams.MATCH_PARENT)
+
+
 ```
 
-1、需要监听dialog的show事件。可在dialog中重写setOnShowListener事件，并做以下处理
+2、需要将dialog设置进自定义的KeyboardEditText内
 
 ```kotlin
-override fun setOnShowListener(listener: DialogInterface.OnShowListener?) {
-    super.setOnShowListener(listener)
-    KeyboardUtil.handDialogKeyboardStatus(this, contentView, true, etLetter, etIdNumber, etNumber)
-}
+    //这样它们就能自我管理键盘的显示和滚动。
+    binding.etLetter.addDialogWindow(this)
+    binding.etIdNumber.addDialogWindow(this)
+    binding.etNumber.addDialogWindow(this)
 ```
 
 # 修改键盘参数
@@ -66,12 +67,12 @@ override fun setOnShowListener(listener: DialogInterface.OnShowListener?) {
 
 # 键盘参数说明
 
-| 字段              | 说明     |
-|:---------------:|:------:|
+| 字段              | 说明      |
+|:---------------:|:-------:|
 | keyPadding      | 按键之间的间距 |
-| keyTopPadding   | 按键顶部间距 |
-| keyTextSize     | 字体大小   |
-| keyTextColor    | 字体颜色   |
+| keyTopPadding   | 按键顶部间距  |
+| keyTextSize     | 字体大小    |
+| keyTextColor    | 字体颜色    |
 | keyNormalColor  | 按键正常颜色  |
 | keyDrawableSize | 按键中图片大小 |
 | keyPressColor   | 按键按下颜色  |
@@ -89,5 +90,3 @@ KeyboardUtil.dispatchTouchEvent(ev, this)
 ```kotlin
  KeyboardUtil.handScrollViewFocusable(scrollView)
 ```
-
-

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "cn.wgc.keyboard.demo"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "cn.wgc.keyboard.demo"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -45,9 +45,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(project(":customKeyboard"))
-//    implementation(libs.customKeyboard)
-//
+//    implementation(project(":customKeyboard"))
+    implementation(libs.customKeyboard)
+
     implementation(libs.immersionbar)
     implementation(libs.immersionbar.ktx)
 }

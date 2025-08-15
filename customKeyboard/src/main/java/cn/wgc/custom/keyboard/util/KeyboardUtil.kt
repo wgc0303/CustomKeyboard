@@ -1,27 +1,16 @@
 package cn.wgc.custom.keyboard.util
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.ContextWrapper
-import android.os.Build
 import android.os.IBinder
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
-import android.view.Window
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsCompat
-import cn.wgc.custom.keyboard.view.KeyboardEditText
 
 /**
  * <pre>
@@ -100,140 +89,4 @@ object KeyboardUtil {
         scrollView.isFocusable = true
         scrollView.isFocusableInTouchMode = true
     }
-
-    fun handDialogKeyboardStatus(
-        dialog: Dialog,
-        contentView: View,
-        hasListener: Boolean,
-        vararg keyboardEditTexts: KeyboardEditText
-    ) {
-        val dialogWindow = dialog.window!!
-
-        keyboardEditTexts.forEach {
-            it.addDialogWindow(dialogWindow)
-        }
-        if (!hasListener) {
-            dialog.setOnShowListener {
-                handKeyboardLocation(
-                    dialog, contentView, keyboardEditTexts
-                )
-            }
-        } else {
-            handKeyboardLocation(dialog, contentView, keyboardEditTexts)
-        }
-
-    }
-
-    private fun handKeyboardLocation(
-        dialog: Dialog, contentView: View, keyboardEditTexts: Array<out KeyboardEditText>
-    ) {
-        contentView.viewTreeObserver?.addOnGlobalLayoutListener(object :
-                                                                    ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                contentView.viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                //延时为了解决在dialog中屏蔽导航栏，键盘显示会上顶一个导航栏高度的问题
-//                contentView.postDelayed({
-                val context = dialog.context
-                val dm = DisplayMetrics()
-                val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                val screenHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    manager.currentWindowMetrics.bounds.height()
-                } else {
-                    manager.defaultDisplay.getRealMetrics(dm)
-                    dm.heightPixels
-                }
-                val location = IntArray(2)
-                contentView.getLocationOnScreen(location)
-                val start = location[1]
-                val window=if (dialog.ownerActivity != null) dialog.ownerActivity!!.window else ((context as ContextWrapper).baseContext as Activity).window
-                val navBarVisible = hasNavigationBar(window, context)
-                Log.d("wgc","navBarVisible:$navBarVisible")
-                val navigationBarHeight = if (navBarVisible) getNavigationBarHeight(window,context) else 0
-                val attributes = dialog.window?.attributes
-                var popupOffsetY = if (attributes?.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                    if (!navBarVisible) {
-                        screenHeight - start - contentView.height
-                    } else {
-                        screenHeight - start - contentView.height - navigationBarHeight
-                    }
-                } else {
-                    if (!navBarVisible) {
-                        0
-                    } else {
-                        screenHeight - start - contentView.height - navigationBarHeight * 2
-                    }
-                }
-                //计算实际控件在dialog中window的实际位置Y的偏差，位置偏差
-                val selfLocationOffsetY = when (attributes?.gravity) {
-                    Gravity.CENTER -> screenHeight / 2 - contentView.height / 2
-                    Gravity.BOTTOM,
-                    Gravity.BOTTOM or Gravity.RIGHT,
-                    Gravity.BOTTOM or Gravity.LEFT,
-                    -> screenHeight - contentView.height / 2
-
-                    else -> 0
-                }
-                keyboardEditTexts.forEach {
-                    it.setPopupLocationOffsetYOnDialog(-popupOffsetY)
-                    it.setSelfLocationOffsetYOnDialog(selfLocationOffsetY)
-                }
-
-            }
-        })
-    }
-
-    @SuppressLint("InternalInsetResource")
-    fun getNavigationBarHeight(context: Context): Int {
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        val navigationBarHeight =
-            if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
-        Log.d("wgc", "navigationBarHeight:  $navigationBarHeight    ")
-        return navigationBarHeight
-    }
-
-    fun getNavigationBarHeight(window: Window, context: Context): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val insets = window.decorView.rootWindowInsets
-            val bottom = insets.systemGestureInsets.bottom
-            Log.d("wgc", "navigationBarHeight:  $bottom    ")
-            return bottom
-        }
-        return getNavigationBarHeight(context)
-    }
-
-    @SuppressLint("InternalInsetResource")
-    fun getStatusBarHeight(context: Context): Int {
-        val resources = context.resources
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (resourceId != 0) resources.getDimensionPixelSize(resourceId) else 0
-    }
-
-    fun hasNavigationBar(context: Context): Boolean {
-        val resources = context.resources
-        val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
-        return if (id > 0) {
-            resources.getBoolean(id)
-        } else false
-    }
-
-    /**
-     * 判断底部状态栏是否显示
-     */
-    fun hasNavigationBar(window: Window, context: Context): Boolean {
-        val displayMetrics = context.resources.displayMetrics
-        val usableHeight = displayMetrics.heightPixels
-        val realHeight = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.windowManager.currentWindowMetrics.bounds.height()
-        } else {
-            val metrics = DisplayMetrics()
-            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(
-                metrics
-            )
-            metrics.heightPixels
-        }
-        return realHeight > usableHeight
-    }
-
-
 }

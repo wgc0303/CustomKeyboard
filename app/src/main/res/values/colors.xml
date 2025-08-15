@@ -8,4 +8,5 @@
     <color name="dialog_status_bar_color">#66687C</color>
     <color name="dialog_transparent_color">#80000000</color>
     <color name="red">#ffff0000</color>
+    <color name="transparent01">#01000000</color>
 </resources>

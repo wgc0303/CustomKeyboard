@@ -9,7 +9,6 @@
     app:keyDrawableSize="18dp"
     app:keyNormalColor="@color/white"
     app:keyPadding="1.5dp"
-    app:keyPressColor="@color/gray"
     app:keyTextColor="@color/black"
     app:keyTextSize="24sp"
     app:keyTopAndBottomPadding="1.5dp" />
